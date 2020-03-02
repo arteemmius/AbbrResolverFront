@@ -1,0 +1,67 @@
+<window apply="realization.AbbrApplication" width="1350px" height="800px">
+    <div style="margin-left:5px;margin-top:10px;">
+    	<div>Входной текст:</div>
+        <textbox id="input" rows="20" width="570px;" />
+    </div>
+    <div style="margin-left:700px;margin-top:-388px;">
+    	<div>Итоговый результат:</div>
+        <textbox id="output" rows="20" width="570px;" />
+    </div>      
+    <div style="margin-top:10px;">
+    Категория текста:
+    <listbox mold="select" hflex="1" id="list">
+        <listitem label="Не выбрано" value="Не выбрано" selected="true"/>    
+        <listitem label="Авиация и космонавтика" value="Авиация и космонавтика" />
+        <listitem label="Административное право" value="Административное право" />
+        <listitem label="Арбитражный процесс" value="Арбитражный процесс"/>
+        <listitem label="Архитектура" value="Архитектура" />
+        <listitem label="Астрономия" value="Астрономия" />
+		<listitem label="Банковское дело" value="Банковское дело" />
+		<listitem label="Безопасность жизнедеятельности" value="Безопасность жизнедеятельности" />
+		<listitem label="Биографии" value="Биографии" />
+		<listitem label="Биология" value="Биология" />
+		<listitem label="Биология и химия" value="Биология и химия" />
+		<listitem label="Биржевое дело" value="Биржевое дело" />
+		<listitem label="Ботаника и сельское хоз-во" value="Ботаника и сельское хоз-во" />
+		<listitem label="Бухгалтерский учет и аудит" value="Бухгалтерский учет и аудит" />
+		<listitem label="Валютные отношения" value="Валютные отношения" />
+		<listitem label="Ветеринария" value="Ветеринария" />
+		<listitem label="Военная кафедра" value="Военная кафедра" />
+		<listitem label="География" value="География" />
+		<listitem label="Геодезия" value="Геодезия" />
+		<listitem label="Геология" value="Геология" />
+		<listitem label="Геополитика" value="Геополитика" />
+		<listitem label="Государство и право" value="Государство и право" />
+		<listitem label="Гражданское право и процесс" value="Гражданское право и процесс" />
+		<listitem label="Деньги и кредит" value="Деньги и кредит" />
+		<listitem label="ЕГЭ" value="ЕГЭ" />
+		<listitem label="Естествознание" value="Естествознание" />
+		<listitem label="Журналистика" value="Журналистика" />
+		<listitem label="Зоология" value="Зоология" />
+		<listitem label="Издательское дело и полиграфия" value="Издательское дело и полиграфия" />
+		<listitem label="Инвестиции" value="Инвестиции" />
+		<listitem label="Иностранный язык" value="Иностранный язык" />
+		<listitem label="Информатика" value="Информатика" />
+		<listitem label="Информатика, программирование" value="Информатика, программирование" />
+		<listitem label="Исторические личности" value="Исторические личности" />
+		<listitem label="История" value="История" />
+		<listitem label="История техники" value="История техники" />
+		<listitem label="Кибернетика" value="Кибернетика" />
+		<listitem label="Коммуникации и связь" value="Коммуникации и связь" />
+		<listitem label="Компьютерные науки" value="Компьютерные науки" />
+		<listitem label="Краеведение и этнография" value="Краеведение и этнография" />
+		<listitem label="Криминалистика" value="Криминалистика" />
+		<listitem label="Криминология" value="Криминология" />
+		<listitem label="Кулинария" value="Кулинария" />
+		<listitem label="Культура и искусство" value="Культура и искусство" />
+		<listitem label="Культурология" value="Культурология" />
+		<listitem label="Логика" value="Логика" />
+		<listitem label="Логистика" value="Логистика" />
+		<listitem label="Маркетинг" value="Маркетинг" />
+		<listitem label="Математика" value="Математика" />        
+    </listbox>	
+    </div>    		    
+    <div style="margin-top:10px;">Вкл/выкл возвращение списка сокращений: <checkbox id="checkReturn" /> </div>		
+    <button id="ok" label="Submit" style="margin-top:10px;" /> 
+	<listbox mold="paging" pageSize="3" id="listAbbrs" visible="hidden" style="margin-top:10px;" />		
+</window>
