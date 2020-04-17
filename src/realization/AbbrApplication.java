@@ -1,6 +1,10 @@
 package realization;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.List;
 
 import model.data.FullTextInputData;
@@ -22,9 +26,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class AbbrApplication extends SelectorComposer<Window> {
 
 	private static final long serialVersionUID = 1L;
-	private final String url = "http://localhost:8090/AbbrResolver-1.0/fullText";
-	private final boolean useClassifier = false;
-	
+	private static String url = "http://localhost:8090/AbbrResolver-1.0/fullText";
+	private static HashMap<String, String> classesMappingVoc = new HashMap<>();
+	static {
+		try {
+	        String line;
+	        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../webapps/conf/settings.properties"), "UTF8"));
+	        while ((line = br.readLine()) != null) {
+	                classesMappingVoc.put(line.split("=")[0], line.split("=")[1]);
+	        }
+	        br.close();
+		
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	@Wire
     Textbox input;
     @Wire
@@ -45,12 +62,17 @@ public class AbbrApplication extends SelectorComposer<Window> {
     		trace("list item = " + list.getSelectedItem().getValue());
     		po = list.getSelectedItem().getValue();
     	}
+    	trace("po = " + po);
     	FullTextOutputData out = fillOutputObj(input.getValue(), checkReturn.isChecked(), po);
     	if (out != null) {
-    		for (int j = 0; j < out.getAbbrList().size(); j++) {
-    			trace("out.getAbbrList()_j = " + out.getAbbrList().get(j));
+    		if (out.getAbbrList() != null) {
+	    		
+	    		for (int j = 0; j < out.getAbbrList().size(); j++) {
+	    			trace("out.getAbbrList()_j = " + out.getAbbrList().get(j));
+	    		}
+	 
+	    		initListbox(listAbbrs, out.getAbbrList());
     		}
-    		initListbox(listAbbrs, out.getAbbrList());
     		if (listAbbrs != null && listAbbrs.getItemCount() != 0)
     			listAbbrs.setVisible(checkReturn.isChecked());
     		trace("out.getText() = " + out.getText());
@@ -70,7 +92,11 @@ public class AbbrApplication extends SelectorComposer<Window> {
     }
     public FullTextOutputData fillOutputObj(String text, boolean checkGetAbbr, String po) {
 	    FullTextInputData input = new FullTextInputData();
-	
+	    boolean useClassifier;
+	    if (po == null)
+	    	useClassifier = true;
+	    else
+	    	useClassifier = false;
 	    input.setText(text);
 	    input.setCheckGetAbbr(checkGetAbbr);
 	    input.setCheckPO(useClassifier);
@@ -78,6 +104,9 @@ public class AbbrApplication extends SelectorComposer<Window> {
 	    
 	    try {
 	    	FullTextOutputData out = new FullTextOutputData();
+	    	if (classesMappingVoc.get("urlAbbrResolver") != null) {
+	    		url = classesMappingVoc.get("urlAbbrResolver");
+	    	}
 	    	out =  sendREST_POST(input, url);
 	    	return out;
 		} catch (Exception e) {
