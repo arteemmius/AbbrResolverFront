@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -31,9 +32,12 @@ public class AbbrApplication extends SelectorComposer<Window> {
 	static {
 		try {
 	        String line;
+	        String[] input;
+	        input = new String[2];
 	        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../webapps/conf/settings.properties"), "UTF8"));
 	        while ((line = br.readLine()) != null) {
-	                classesMappingVoc.put(line.split("=")[0], line.split("=")[1]);
+	        	input = line.split("=");
+	                classesMappingVoc.put(input[0], input[1]);
 	        }
 	        br.close();
 		
