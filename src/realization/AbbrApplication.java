@@ -31,140 +31,147 @@ public class AbbrApplication extends SelectorComposer<Window> {
 	private static HashMap<String, String> classesMappingVoc = new HashMap<>();
 	static {
 		try {
-	        String line;
-	        String[] input;
-	        input = new String[2];
-	        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("../webapps/conf/settings.properties"), "UTF8"));
-	        while ((line = br.readLine()) != null) {
-	        	input = line.split("=");
-	                classesMappingVoc.put(input[0], input[1]);
-	        }
-	        br.close();
-		
-		}
-		catch(Exception e) {
+			String line;
+			String[] input;
+			input = new String[2];
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+					new FileInputStream("../webapps/conf/settings.properties"),
+					"UTF8"));
+			while ((line = br.readLine()) != null) {
+				input = line.split("=");
+				classesMappingVoc.put(input[0], input[1]);
+			}
+			br.close();
+
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	@Wire
-    Textbox input;
-    @Wire
-    Textbox output;
-    @Wire
-    Listbox list;
-    @Wire
-    Checkbox checkReturn;
-    @Wire
-    Listbox listAbbrs;
+	Textbox input;
+	@Wire
+	Textbox output;
+	@Wire
+	Listbox list;
+	@Wire
+	Checkbox checkReturn;
+	@Wire
+	Listbox listAbbrs;
 
-    @Listen("onClick=#ok")
-    public void submit() throws Exception {
-    	String po = null;
-        trace(input.getValue());
-        trace("checkReturn = " + checkReturn.isChecked());
-    	if (list.getSelectedItem() != null && !"Не выбрано".equals(list.getSelectedItem().getValue())) {
-    		trace("list item = " + list.getSelectedItem().getValue());
-    		po = list.getSelectedItem().getValue();
-    	}
-    	trace("po = " + po);
-    	FullTextOutputData out = fillOutputObj(input.getValue(), checkReturn.isChecked(), po);
-    	if (out != null) {
-    		if (out.getAbbrList() != null) {
-	    		
-	    		for (int j = 0; j < out.getAbbrList().size(); j++) {
-	    			trace("out.getAbbrList()_j = " + out.getAbbrList().get(j));
-	    		}
-	 
-	    		initListbox(listAbbrs, out.getAbbrList());
-    		}
-    		if (listAbbrs != null && listAbbrs.getItemCount() != 0)
-    			listAbbrs.setVisible(checkReturn.isChecked());
-    		trace("out.getText() = " + out.getText());
-    		output.setValue(out.getText());
-	    	if (out.getTextPO() != null) {
-	    		int index = getElementIndexByValue(list, out.getTextPO());
-	    		if (index != -1) {
-	    			trace("index = " + index);
-	    			list.setSelectedIndex(index);
-	    			trace("list.getSelectedItem().getValue() = " + list.getSelectedItem().getValue());
-	    		}
-	    	}
-    	}
-    	else {
-    		throw new Exception();
-    	}
-    }
-    public FullTextOutputData fillOutputObj(String text, boolean checkGetAbbr, String po) {
-	    FullTextInputData input = new FullTextInputData();
-	    boolean useClassifier;
-	    if (po == null)
-	    	useClassifier = true;
-	    else
-	    	useClassifier = false;
-	    input.setText(text);
-	    input.setCheckGetAbbr(checkGetAbbr);
-	    input.setCheckPO(useClassifier);
-	    input.setPO(po);
-	    
-	    try {
-	    	FullTextOutputData out = new FullTextOutputData();
-	    	if (classesMappingVoc.get("urlAbbrResolver") != null) {
-	    		url = classesMappingVoc.get("urlAbbrResolver");
-	    	}
-	    	out =  sendREST_POST(input, url);
-	    	return out;
+	@Listen("onClick=#ok")
+	public void submit() throws Exception {
+		String po = null;
+		trace(input.getValue());
+		trace("checkReturn = " + checkReturn.isChecked());
+		if (list.getSelectedItem() != null
+				&& !"Не выбрано".equals(list.getSelectedItem().getValue())) {
+			trace("list item = " + list.getSelectedItem().getValue());
+			po = list.getSelectedItem().getValue();
+		}
+		trace("po = " + po);
+		FullTextOutputData out = fillOutputObj(input.getValue(),
+				checkReturn.isChecked(), po);
+		if (out != null) {
+			if (out.getAbbrList() != null) {
+
+				for (int j = 0; j < out.getAbbrList().size(); j++) {
+					trace("out.getAbbrList()_j = " + out.getAbbrList().get(j));
+				}
+
+				initListbox(listAbbrs, out.getAbbrList());
+			}
+			if (listAbbrs != null && listAbbrs.getItemCount() != 0)
+				listAbbrs.setVisible(checkReturn.isChecked());
+			trace("out.getText() = " + out.getText());
+			output.setValue(out.getText());
+			if (out.getTextPO() != null) {
+				int index = getElementIndexByValue(list, out.getTextPO());
+				if (index != -1) {
+					trace("index = " + index);
+					list.setSelectedIndex(index);
+					trace("list.getSelectedItem().getValue() = "
+							+ list.getSelectedItem().getValue());
+				}
+			}
+		} else {
+			throw new Exception();
+		}
+	}
+
+	public FullTextOutputData fillOutputObj(String text, boolean checkGetAbbr,
+			String po) {
+		FullTextInputData input = new FullTextInputData();
+		boolean useClassifier;
+		if (po == null)
+			useClassifier = true;
+		else
+			useClassifier = false;
+		input.setText(text);
+		input.setCheckGetAbbr(checkGetAbbr);
+		input.setCheckPO(useClassifier);
+		input.setPO(po);
+
+		try {
+			FullTextOutputData out = new FullTextOutputData();
+			if (classesMappingVoc.get("urlAbbrResolver") != null) {
+				url = classesMappingVoc.get("urlAbbrResolver");
+			}
+			out = sendREST_POST(input, url);
+			return out;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    return null;
-    }
-    
-    private FullTextOutputData sendREST_POST(FullTextInputData obj, String uri) throws Exception {
-    	trace("sendREST_POST: start");
-        ObjectMapper mapper = new ObjectMapper();
-        String str = mapper.writeValueAsString(obj);	
-   
-        StringEntity strEntity = new StringEntity(str, "UTF-8");
-        strEntity.setContentType("application/json");
-        HttpPost post = new HttpPost(uri);
-        post.setEntity(strEntity);
-        //
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        CloseableHttpResponse response = httpClient.execute(post);
-        try {
-            HttpEntity entity = response.getEntity();
-            if (response.getStatusLine().getStatusCode() != 200) {
-                trace("sendREST_POST : error!");
-                return null;
-            }
-            InputStream is = entity.getContent();
-            FullTextOutputData result = mapper.readValue(is, FullTextOutputData.class);
-            trace("sendREST_POST: result = " + result.getText());
-            return result;
-        }
+		return null;
+	}
 
-        finally {
-            response.close();
-            httpClient.close();
-        }
-    }
-    
-    private void initListbox(Listbox lb, List<String> data) {
-    	  lb.setModel(new ListModelList<String>(data));
-    	}    
-    
-    private int getElementIndexByValue(Listbox list, String po) {
-    	for(int i = 0; i < list.getItemCount(); i++) {
-    		if(po.equals(list.getItemAtIndex(i).getValue())) {
-    			trace("getElementIndexByValue: i = " + i);
-    			return i;
-    		}
-    	}
-    	return -1;
-    }
-    
-    private void trace(String s) {
-//    	System.out.println(s);
-    }
+	private FullTextOutputData sendREST_POST(FullTextInputData obj, String uri)
+			throws Exception {
+		trace("sendREST_POST: start");
+		ObjectMapper mapper = new ObjectMapper();
+		String str = mapper.writeValueAsString(obj);
+
+		StringEntity strEntity = new StringEntity(str, "UTF-8");
+		strEntity.setContentType("application/json");
+		HttpPost post = new HttpPost(uri);
+		post.setEntity(strEntity);
+		//
+		CloseableHttpClient httpClient = HttpClients.createDefault();
+		CloseableHttpResponse response = httpClient.execute(post);
+		try {
+			HttpEntity entity = response.getEntity();
+			if (response.getStatusLine().getStatusCode() != 200) {
+				trace("sendREST_POST : error!");
+				return null;
+			}
+			InputStream is = entity.getContent();
+			FullTextOutputData result = mapper.readValue(is,
+					FullTextOutputData.class);
+			trace("sendREST_POST: result = " + result.getText());
+			return result;
+		}
+
+		finally {
+			response.close();
+			httpClient.close();
+		}
+	}
+
+	private void initListbox(Listbox lb, List<String> data) {
+		lb.setModel(new ListModelList<String>(data));
+	}
+
+	private int getElementIndexByValue(Listbox list, String po) {
+		for (int i = 0; i < list.getItemCount(); i++) {
+			if (po.equals(list.getItemAtIndex(i).getValue())) {
+				trace("getElementIndexByValue: i = " + i);
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private void trace(String s) {
+		// System.out.println(s);
+	}
 }

@@ -9,36 +9,36 @@ package model.data;
 import java.util.ArrayList;
 
 /**
- *
+ * 
  * @author artee
  */
 public class FullTextOutputData {
-    private String text;
-    private ArrayList<String> abbrList;
-    private String textPO;
+	private String text;
+	private ArrayList<String> abbrList;
+	private String textPO;
 
-    public String getText() {
-        return text;
-    }
+	public String getText() {
+		return text;
+	}
 
-    public void setText(String text) {
-        this.text = text;
-    }
+	public void setText(String text) {
+		this.text = text;
+	}
 
-    public ArrayList<String> getAbbrList() {
-        return abbrList;
-    }
+	public ArrayList<String> getAbbrList() {
+		return abbrList;
+	}
 
-    public void setAbbrList(ArrayList<String> abbrList) {
-        this.abbrList = abbrList;
-    }
+	public void setAbbrList(ArrayList<String> abbrList) {
+		this.abbrList = abbrList;
+	}
 
-    public String getTextPO() {
-        return textPO;
-    }
+	public String getTextPO() {
+		return textPO;
+	}
 
-    public void setTextPO(String textPO) {
-        this.textPO = textPO;
-    }
-    
+	public void setTextPO(String textPO) {
+		this.textPO = textPO;
+	}
+
 }

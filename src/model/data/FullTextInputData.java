@@ -1,45 +1,45 @@
-package  model.data;
+package model.data;
 
 /**
- *
+ * 
  * @author asamokhin
  */
 public class FullTextInputData {
-    private String text;
-    private Boolean checkPO;
-    private String PO;
-    private Boolean checkGetAbbr;    
-    
-    public void setText(String text) {
-        this.text = text;
-    }   
-    
-    public String getText() {
-        return this.text;
-    } 
+	private String text;
+	private Boolean checkPO;
+	private String PO;
+	private Boolean checkGetAbbr;
 
-    public Boolean isCheckPO() {
-        return checkPO;
-    }
+	public void setText(String text) {
+		this.text = text;
+	}
 
-    public void setCheckPO(Boolean checkPO) {
-        this.checkPO = checkPO;
-    }
+	public String getText() {
+		return this.text;
+	}
 
-    public String getPO() {
-        return PO;
-    }
+	public Boolean isCheckPO() {
+		return checkPO;
+	}
 
-    public void setPO(String PO) {
-        this.PO = PO;
-    }
+	public void setCheckPO(Boolean checkPO) {
+		this.checkPO = checkPO;
+	}
 
-    public Boolean isCheckGetAbbr() {
-        return checkGetAbbr;
-    }
+	public String getPO() {
+		return PO;
+	}
 
-    public void setCheckGetAbbr(Boolean checkGetAbbr) {
-        this.checkGetAbbr = checkGetAbbr;
-    }
-        
+	public void setPO(String PO) {
+		this.PO = PO;
+	}
+
+	public Boolean isCheckGetAbbr() {
+		return checkGetAbbr;
+	}
+
+	public void setCheckGetAbbr(Boolean checkGetAbbr) {
+		this.checkGetAbbr = checkGetAbbr;
+	}
+
 }
