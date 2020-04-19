@@ -29,9 +29,9 @@ public class AbbrApplication extends SelectorComposer<Window> {
 	private static final long serialVersionUID = 1L;
 	private static String url = "http://localhost:8090/AbbrResolver-1.0/fullText";
 	
-	private static String logInfo = "true";
-	private static String logDebug = "true";
-	private static String logError = "true";
+	private static boolean logInfo = true;
+	private static boolean logDebug = true;
+	private static boolean logError = true;
 	
 	private static HashMap<String, String> classesMappingVoc = new HashMap<>();
 	static {
@@ -56,13 +56,22 @@ public class AbbrApplication extends SelectorComposer<Window> {
 			url = classesMappingVoc.get("urlAbbrResolver");
 		}
 		if (classesMappingVoc.get("logInfo") != null) {
-			logInfo = classesMappingVoc.get("logInfo");
+			if (classesMappingVoc.get("logInfo").startsWith("t"))
+			  logInfo = true;
+			else
+			  logInfo = false;
 		}
 		if (classesMappingVoc.get("logDebug") != null) {
-			logDebug = classesMappingVoc.get("logDebug");
+			if (classesMappingVoc.get("logDebug").startsWith("t"))
+				logDebug = true;
+				else
+					logDebug = false;			
 		}
 		if (classesMappingVoc.get("logError") != null) {
-			logError = classesMappingVoc.get("logError");
+			if (classesMappingVoc.get("logError").startsWith("t"))
+				logError = true;
+				else
+					logError = false;				
 		}
 	}
 	@Wire
@@ -79,40 +88,40 @@ public class AbbrApplication extends SelectorComposer<Window> {
 	@Listen("onClick=#ok")
 	public void submit() throws Exception {
 		String po = null;
-		if (logDebug.startsWith("t")) trace(input.getValue());
-		if (logDebug.startsWith("t"))trace("checkReturn = " + checkReturn.isChecked());
+		if (logDebug) trace(input.getValue());
+		if (logDebug)trace("checkReturn = " + checkReturn.isChecked());
 		if (list.getSelectedItem() != null
 				&& !"Не выбрано".equals(list.getSelectedItem().getValue())) {
-			if (logDebug.startsWith("t")) trace("list item = " + list.getSelectedItem().getValue());
+			if (logDebug) trace("list item = " + list.getSelectedItem().getValue());
 			po = list.getSelectedItem().getValue();
 		}
-		if (logInfo.startsWith("t")) trace("po = " + po);
+		if (logInfo) trace("po = " + po);
 		FullTextOutputData out = fillOutputObj(input.getValue(),
 				checkReturn.isChecked(), po);
 		if (out != null) {
 			if (out.getAbbrList() != null) {
 
 				for (int j = 0; j < out.getAbbrList().size(); j++) {
-					if (logDebug.startsWith("t")) trace("out.getAbbrList()_j = " + out.getAbbrList().get(j));
+					if (logDebug) trace("out.getAbbrList()_j = " + out.getAbbrList().get(j));
 				}
 
 				initListbox(listAbbrs, out.getAbbrList());
 			}
 			if (listAbbrs != null && listAbbrs.getItemCount() != 0)
 				listAbbrs.setVisible(checkReturn.isChecked());
-			if (logDebug.startsWith("t")) trace("out.getText() = " + out.getText());
+			if (logDebug) trace("out.getText() = " + out.getText());
 			output.setValue(out.getText());
 			if (out.getTextPO() != null) {
 				int index = getElementIndexByValue(list, out.getTextPO());
 				if (index != -1) {
-					if (logDebug.startsWith("t"))  trace("index = " + index);
+					if (logDebug)  trace("index = " + index);
 					list.setSelectedIndex(index);
-					if (logDebug.startsWith("t"))  trace("list.getSelectedItem().getValue() = "
+					if (logDebug)  trace("list.getSelectedItem().getValue() = "
 							+ list.getSelectedItem().getValue());
 				}
 			}
 		} else {
-			if (logError.startsWith("t")) trace("error: cant't initialize FullTextOutputData!");
+			if (logError) trace("error: cant't initialize FullTextOutputData!");
 			throw new Exception();
 		}
 	}
@@ -135,7 +144,7 @@ public class AbbrApplication extends SelectorComposer<Window> {
 			out = sendREST_POST(input, url);
 			return out;
 		} catch (Exception e) {
-			if (logError.startsWith("t")) trace("error: cant't return FullTextOutputData!");
+			if (logError) trace("error: cant't return FullTextOutputData!");
 			e.printStackTrace();
 		}
 		return null;
@@ -143,7 +152,7 @@ public class AbbrApplication extends SelectorComposer<Window> {
 
 	private FullTextOutputData sendREST_POST(FullTextInputData obj, String uri)
 			throws Exception {
-		if (logInfo.startsWith("t")) trace("sendREST_POST: start");
+		if (logInfo) trace("sendREST_POST: start");
 		ObjectMapper mapper = new ObjectMapper();
 		String str = mapper.writeValueAsString(obj);
 
@@ -157,13 +166,13 @@ public class AbbrApplication extends SelectorComposer<Window> {
 		try {
 			HttpEntity entity = response.getEntity();
 			if (response.getStatusLine().getStatusCode() != 200) {
-				if (logError.startsWith("t")) trace("sendREST_POST : error!");
+				if (logError) trace("sendREST_POST : error!");
 				return null;
 			}
 			InputStream is = entity.getContent();
 			FullTextOutputData result = mapper.readValue(is,
 					FullTextOutputData.class);
-			if (logInfo.startsWith("t")) trace("sendREST_POST: result = " + result.getText());
+			if (logInfo) trace("sendREST_POST: result = " + result.getText());
 			return result;
 		}
 
@@ -180,7 +189,7 @@ public class AbbrApplication extends SelectorComposer<Window> {
 	private int getElementIndexByValue(Listbox list, String po) {
 		for (int i = 0; i < list.getItemCount(); i++) {
 			if (po.equals(list.getItemAtIndex(i).getValue())) {
-				if (logDebug.startsWith("t")) trace("getElementIndexByValue: i = " + i);
+				if (logDebug) trace("getElementIndexByValue: i = " + i);
 				return i;
 			}
 		}
