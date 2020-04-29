@@ -2,6 +2,7 @@ package realization;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import model.data.FullTextInputData;
 import model.data.FullTextOutputData;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -22,6 +24,9 @@ import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.select.annotation.Listen;
 import org.zkoss.zul.*;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AbbrApplication extends SelectorComposer<Window> {
@@ -86,7 +91,7 @@ public class AbbrApplication extends SelectorComposer<Window> {
 	Listbox listAbbrs;
 
 	@Listen("onClick=#ok")
-	public void submit() throws Exception {
+	public void submit() throws IOException {
 		String po = null;
 		if (logDebug) trace(input.getValue());
 		if (logDebug)trace("checkReturn = " + checkReturn.isChecked());
@@ -96,15 +101,15 @@ public class AbbrApplication extends SelectorComposer<Window> {
 			po = list.getSelectedItem().getValue();
 		}
 		if (logInfo) trace("po = " + po);
-		FullTextOutputData out = fillOutputObj(input.getValue(),
-				checkReturn.isChecked(), po);
-		if (out != null) {
+		try {
+			FullTextOutputData out = fillOutputObj(input.getValue(),
+					checkReturn.isChecked(), po);
 			if (out.getAbbrList() != null) {
-
+	
 				for (int j = 0; j < out.getAbbrList().size(); j++) {
 					if (logDebug) trace("out.getAbbrList()_j = " + out.getAbbrList().get(j));
 				}
-
+	
 				initListbox(listAbbrs, out.getAbbrList());
 			}
 			if (listAbbrs != null && listAbbrs.getItemCount() != 0)
@@ -120,14 +125,14 @@ public class AbbrApplication extends SelectorComposer<Window> {
 							+ list.getSelectedItem().getValue());
 				}
 			}
-		} else {
-			if (logError) trace("error: cant't initialize FullTextOutputData!");
-			throw new Exception();
+		}
+		catch(IOException e) {
+			throw new IOException("¬озникла ошибка при установлении соединени€ с модулем поиска и устранени€ сокращений!");			
 		}
 	}
 
 	public FullTextOutputData fillOutputObj(String text, boolean checkGetAbbr,
-			String po) {
+			String po) throws IOException  {
 		FullTextInputData input = new FullTextInputData();
 		boolean useClassifier;
 		if (po == null)
@@ -139,19 +144,13 @@ public class AbbrApplication extends SelectorComposer<Window> {
 		input.setCheckPO(useClassifier);
 		input.setPO(po);
 
-		try {
-			FullTextOutputData out = new FullTextOutputData();
-			out = sendREST_POST(input, url);
-			return out;
-		} catch (Exception e) {
-			if (logError) trace("error: cant't return FullTextOutputData!");
-			e.printStackTrace();
-		}
-		return null;
+		FullTextOutputData out = new FullTextOutputData();
+		out = sendREST_POST(input, url);
+		return out;
 	}
 
-	private FullTextOutputData sendREST_POST(FullTextInputData obj, String uri)
-			throws Exception {
+	private FullTextOutputData sendREST_POST(FullTextInputData obj, String uri) throws IOException 
+			 {
 		if (logInfo) trace("sendREST_POST: start");
 		ObjectMapper mapper = new ObjectMapper();
 		String str = mapper.writeValueAsString(obj);
