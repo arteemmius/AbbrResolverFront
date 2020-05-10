@@ -5,12 +5,17 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import model.data.FullTextInputData;
 import model.data.FullTextOutputData;
+import model.data.list.ListGroupViewModel;
+import model.data.list.ListGroupsModel;
+import model.data.list.ListItem;
+import model.data.list.ListItemData;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.ClientProtocolException;
@@ -19,6 +24,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.zkoss.io.NullWriter;
 import org.zkoss.zk.ui.select.SelectorComposer;
 import org.zkoss.zk.ui.select.annotation.Wire;
 import org.zkoss.zk.ui.select.annotation.Listen;
@@ -28,6 +34,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import errorhandler.ErrorHandlingComposer;
 
 public class AbbrApplication extends SelectorComposer<Window> {
 
@@ -104,16 +112,17 @@ public class AbbrApplication extends SelectorComposer<Window> {
 		try {
 			FullTextOutputData out = fillOutputObj(input.getValue(),
 					checkReturn.isChecked(), po);
-			if (out.getAbbrList() != null) {
-	
-				for (int j = 0; j < out.getAbbrList().size(); j++) {
-					if (logDebug) trace("out.getAbbrList()_j = " + out.getAbbrList().get(j));
-				}
-	
-				initListbox(listAbbrs, out.getAbbrList());
+			
+			if (out.getAbbrList() != null && !out.getAbbrList().isEmpty()) {
+				fillAbbrListAndRedraw(listAbbrs, out.getAbbrList());
 			}
+			else {
+				drawEmptyList(listAbbrs);
+			}
+			
 			if (listAbbrs != null && listAbbrs.getItemCount() != 0)
 				listAbbrs.setVisible(checkReturn.isChecked());
+			
 			if (logDebug) trace("out.getText() = " + out.getText());
 			output.setValue(out.getText());
 			if (out.getTextPO() != null) {
@@ -181,10 +190,47 @@ public class AbbrApplication extends SelectorComposer<Window> {
 		}
 	}
 
-	private void initListbox(Listbox lb, List<String> data) {
-		lb.setModel(new ListModelList<String>(data));
+	private void fillAbbrListAndRedraw(Listbox lb, List<String> abbrList) {
+		List<ListItem> foods = new ArrayList<>();
+		
+		//проинициализировали
+		for(int i = 0; i < abbrList.size(); i++) {
+			if (logDebug) trace("abbrList_i = " + abbrList.get(i));
+			if(abbrList.get(i).contains("Расшифровка отсутствует в словаре")) {
+				String[] subList = abbrList.get(i).split(" : ");
+				ArrayList<String> descList = new ArrayList<String>();
+				descList.add(subList[1]);
+				foods.add(new ListItem(subList[0], descList));
+				continue;
+			}
+			
+			String[] subList = abbrList.get(i).split(";");
+			ArrayList<String> descList = new ArrayList<String>();
+			
+			for (int j = 1; j < subList.length; j++) {
+				descList.add(subList[j]);
+			}
+			
+			foods.add(new ListItem(subList[0], descList));
+		}
+		ListItemData.setAllFoods(foods);
+		//нарисовали
+		ListGroupViewModel model = new ListGroupViewModel();
+		model.init();
+		lb.setModel(model.getGroupModel());
+		lb.renderAll();
 	}
-
+	
+	private void drawEmptyList(Listbox lb) {
+		List<ListItem> foods = new ArrayList<>();
+		ListItemData.setAllFoods(foods);
+		//нарисовали
+		ListGroupViewModel model = new ListGroupViewModel();
+		model.init();
+		lb.setModel(model.getGroupModel());
+		lb.renderAll();		
+	}
+	
 	private int getElementIndexByValue(Listbox list, String po) {
 		for (int i = 0; i < list.getItemCount(); i++) {
 			if (po.equals(list.getItemAtIndex(i).getValue())) {
