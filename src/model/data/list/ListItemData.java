@@ -25,5 +25,4 @@ public class ListItemData {
     public static ListItem[] getAllFoodsArray() {
         return foods.toArray(new ListItem[foods.size()]);
     }
-    
 }

@@ -65,7 +65,7 @@
     <button id="ok" label="Отправить" style="margin-top:10px;" /> 
 	 
 	<div style="margin-top:20px;" apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('model.data.list.ListGroupViewModel')">	    
-	    <listbox mold="paging" pageSize="4" id="listAbbrs"
+	    <listbox id="listAbbrs" multiple="true" height="600px"
 	    model="@load(vm.groupModel)"
 	  	itemRenderer="model.data.list.ListGroupRenderer"
 	  	visible="hidden">	  	

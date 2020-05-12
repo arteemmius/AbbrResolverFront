@@ -16,32 +16,18 @@ import org.zkoss.zul.Tabbox;
 import org.zkoss.zul.Tabpanel;
 import org.zkoss.zul.Tabpanels;
 import org.zkoss.zul.Tabs;
+
+import realization.AbbrApplication;
 	 
 public class ListGroupRenderer implements ListitemRenderer<Object> {
  
 	@Override
     public void render(Listitem listitem, Object obj, int index) throws Exception {	
-	    if (listitem instanceof Listgroup) {
-	    	ListGroupsModel.ListGroupInfo groupInfo = (ListGroupsModel.ListGroupInfo) obj;
-	    	if (groupInfo.getGroupIndex() == -1) {
-	    		listitem.detach();
-	    		return;
-	    		//listitem.appendChild(new Listcell("Сокращение"));
-	    		//listitem.appendChild(new Listcell("Расшифровка(и)"));
-	    		//listitem.setValue(obj);
-	    	}
-	    }
-	    else if (listitem instanceof Listgroupfoot) {
-    		listitem.detach();
-    		return;
-            //Listcell cell = new Listcell();
-            //cell.setSclass("foodFooter");
-            //cell.setSpan(6);
-            //cell.appendChild(new Label("Общее число элементов " + obj));
-            //listitem.appendChild(cell);	    	
-	    }
-	    else {
-	    	ListItem data = (ListItem) obj;
+		AbbrApplication.trace("render: listitem = " + listitem);
+		AbbrApplication.trace("render: obj = " + obj);
+		AbbrApplication.trace("render: index = " + index);
+    	try {
+	    	ListItem data = ListItemData.getAllFoods().get(index);
 	    	
 	    	Listcell self0 = new Listcell();
 	    	self0.setLabel(data.getAbbr());
@@ -71,9 +57,12 @@ public class ListGroupRenderer implements ListitemRenderer<Object> {
 	        Listcell self = new Listcell();
 	        self.appendChild(tabbox);
 	        listitem.appendChild(self);
-	        
-	        listitem.setValue(data);
-	    }
+    	}
+    	catch(Exception e) {
+    		//пустой список
+    		e.printStackTrace();
+    		return;
+    	}
     }
  
 }

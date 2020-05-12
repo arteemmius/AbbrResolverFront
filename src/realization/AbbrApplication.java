@@ -35,8 +35,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import errorhandler.ErrorHandlingComposer;
-
 public class AbbrApplication extends SelectorComposer<Window> {
 
 	private static final long serialVersionUID = 1L;
@@ -190,7 +188,7 @@ public class AbbrApplication extends SelectorComposer<Window> {
 		}
 	}
 
-	private void fillAbbrListAndRedraw(Listbox lb, List<String> abbrList) {
+	public void fillAbbrListAndRedraw(Listbox lb, List<String> abbrList) {
 		List<ListItem> foods = new ArrayList<>();
 		
 		//проинициализировали
@@ -218,7 +216,27 @@ public class AbbrApplication extends SelectorComposer<Window> {
 		ListGroupViewModel model = new ListGroupViewModel();
 		model.init();
 		lb.setModel(model.getGroupModel());
-		lb.renderAll();
+		//lb.renderAll();
+		List<Listitem> ls = lb.getItems();
+		List<Listitem> ls_copy = new ArrayList<>();
+		
+		for (int j = 0; j < ls.size(); j++) {
+			if (!(ls.get(j) instanceof Listgroup) && !(ls.get(j) instanceof Listgroupfoot)) {
+				trace("ls_copy add " + ls.get(j));
+				ls.get(j).setValue(ListItemData.getAllFoods().get(0));
+				ls_copy.add(ls.get(j));
+			}
+		}
+		ls.clear();
+		ls.addAll(ls_copy);	
+		
+		for (int j = 0; j < ls.size(); j++) {
+			trace("ls_i = " + ls.get(j));
+			trace("ls_child_i = " + ls.get(j).getChildren());
+			trace("ls_index_i = " + ls.get(j).getIndex());
+			trace("ls_value_i = " + ls.get(j).getValue());
+			lb.renderItem(ls.get(j));
+		}
 	}
 	
 	private void drawEmptyList(Listbox lb) {
@@ -241,7 +259,7 @@ public class AbbrApplication extends SelectorComposer<Window> {
 		return -1;
 	}
 
-	private void trace(String s) {
+	public static void trace(String s) {
 	  System.out.println(s);
 	}
 }

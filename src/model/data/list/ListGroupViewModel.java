@@ -1,9 +1,7 @@
 package model.data.list;
-	 
 
-import org.zkoss.bind.annotation.BindingParam;
-import org.zkoss.bind.annotation.Command;
 import org.zkoss.bind.annotation.Init;
+import org.zkoss.zul.Listbox;
  
 public class ListGroupViewModel {
  
