@@ -60,10 +60,9 @@
 		<listitem label="Маркетинг" value="Маркетинг" />
 		<listitem label="Математика" value="Математика" />        
     </listbox>	
-    </div>    		    
-    <div style="margin-top:10px;">Вкл/выкл возвращение списка сокращений: <checkbox id="checkReturn" /> </div>		
-    <button id="ok" label="Отправить" style="margin-top:10px;" /> 
-	 
+    </div>    	    
+    <div style="margin-top:10px;"><checkbox id="checkReturn" mold="switch" label="вкл/выкл возвращение списка сокращений" /> </div>		
+    <button id="ok" label="Отправить" style="margin-top:10px;" />    
 	<div style="margin-top:20px;" apply="org.zkoss.bind.BindComposer" viewModel="@id('vm') @init('model.data.list.ListGroupViewModel')">	    
 	    <listbox id="listAbbrs" multiple="true" height="600px"
 	    model="@load(vm.groupModel)"
